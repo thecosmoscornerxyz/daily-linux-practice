@@ -16,8 +16,9 @@ usergroup_dir = os.path.join(day_dir, "usergroup")
 systemd_dir = os.path.join(day_dir, "systemd")
 process_dir = os.path.join(day_dir, "process")
 network_dir = os.path.join(day_dir, "networking")
+awk_dir = os.path.join(day_dir, "awk")
 
-for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir]:
+for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir]:
     os.makedirs(path, exist_ok=True)
 
 # ==== Cheat Sheets ==== #
@@ -151,6 +152,19 @@ network_cheatcontent = (
 if not os.path.exists (network_cheatpath):
     with open (network_cheatpath, "w") as f:
         f.write(network_cheatcontent)
+
+awk_cheatpath = os.path.join(awk_dir, "cheatsheet.md")
+awk_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'echo "boogers boogers2 boogers3" | tee boogers.md\n'
+	'echo "no shit sherlock" >> boogers.md\n\n'
+	'awk "{print$1}" boogers.md\n'
+	'awk "/no" boogers.md'
+)
+
+if not os.path.exists (awk_cheatpath):
+	with open(awk_cheatpath, "w") as f:
+		f.write(awk_cheatcontent)
 
 print(f"Created daily folder structure for {today.strftime('%Y-%m%d')}")
 
