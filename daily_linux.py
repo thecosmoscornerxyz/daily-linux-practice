@@ -1,5 +1,13 @@
+#!/usr/bin/env python3
+
 import os
+import sys
 from datetime import datetime
+
+# Add Signal_Link.py Path to File
+sys.path.append("/opt/signal_link")
+
+from signal_link import signal_link
 
 base_dir = "/home/cosmos/Linux"
 
@@ -169,3 +177,5 @@ if not os.path.exists (awk_cheatpath):
 print(f"Created daily folder structure for {today.strftime('%Y-%m%d')}")
 
 # Don't Forget to chmod +x the ./system<number> script!
+
+signal_link("daily_linux.py", "dailybox-prod-LXC")
