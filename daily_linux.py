@@ -25,8 +25,17 @@ systemd_dir = os.path.join(day_dir, "systemd")
 process_dir = os.path.join(day_dir, "process")
 network_dir = os.path.join(day_dir, "networking")
 awk_dir = os.path.join(day_dir, "awk")
+cut_dir = os.path.join(day_dir, "cut")
+file_dir = os.path.join(day_dir, "file")
+find_dir = os.path.join(day_dir, "find")
+grep_dir = os.path.join(day_dir, "grep")
+sed_dir = os.path.join(day_dir, "sed")
+sort_dir = os.path.join(day_dir, "sort")
+tr_dir = os.path.join(day_dir, "tr")
+uniq_dir = os.path.join(day_dir, "uniq")
+wc_dir = os.path.join(day_dir, "wc")
 
-for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir]:
+for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, cut_dir, file_dir, find_dir, grep_dir, sed_dir, sort_dir, tr_dir, uniq_dir, wc_dir]:
     os.makedirs(path, exist_ok=True)
 
 # ==== Cheat Sheets ==== #
@@ -163,16 +172,204 @@ if not os.path.exists (network_cheatpath):
 
 awk_cheatpath = os.path.join(awk_dir, "cheatsheet.md")
 awk_cheatcontent = (
-	'#!/usr/bin/env bash\n\n'
-	'echo "boogers boogers2 boogers3" | tee boogers.md\n'
-	'echo "no shit sherlock" >> boogers.md\n\n'
-	'awk "{print$1}" boogers.md\n'
-	'awk "/no" boogers.md'
+    '#!/usr/bin/env bash\n\n'
+    'echo "boogers boogers2 boogers3" | tee boogers.md\n'
+    'echo "no shit sherlock" >> boogers.md\n\n'
+    "awk '{print $1}' boogers.md\n"
+    "awk '/no/' boogers.md\n"
+    "awk '{print NR, $0}' boogers.md\n"
+    "awk 'NR == 2 {print $0}' boogers.md\n"
+    "awk '{print NF}' boogers.md\n"
+    "awk '{print $NF}' boogers.md\n"
+    "awk -F: '{print $1, $3, $7}' /etc/passwd\n"
+    "awk 'END {print \"Total Lines:\", NR}' boogers.md\n"
 )
 
 if not os.path.exists (awk_cheatpath):
 	with open(awk_cheatpath, "w") as f:
 		f.write(awk_cheatcontent)
+		
+cut_cheatpath = os.path.join(cut_dir, "cheatsheet.md")
+cut_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'cut -d" " -f1 boogers.md\n'
+	'cut -d" " -f1,3 boogers.md\n'
+	'cut -c1-5 boogers.md\n'
+	'cut -d: -f1,7 /etc/passwd'
+)
+
+cut_boogers_path = os.path.join(cut_dir, "boogers.md")
+cut_boogers_content = (
+	'boogers boogers2 boogers3\n'
+	'no shit sherlock'
+)
+
+if not os.path.exists(cut_cheatpath):
+	with open(cut_cheatpath, "w") as f:
+		f.write(cut_cheatcontent)
+		
+if not os.path.exists(cut_boogers_path):
+	with open(cut_boogers_path, "w") as f:
+		f.write(cut_boogers_content)
+		
+file_cheatpath = os.path.join(file_dir, "cheatsheet.md")
+file_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'echo "boogers" | tee boogers.md\n\n'
+	'file boogers.md\n'
+	'file /bin/bash\n'
+	'file /etc/passwd\n'
+)
+
+if not os.path.exists(file_cheatpath):
+	with open(file_cheatpath, "w") as f:
+		f.write(file_cheatcontent)
+		
+find_cheatpath = os.path.join(find_dir, "cheatsheet.md")
+find_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'find . -name "*.md"\n'
+	'find . -type f\n'
+	'find . -type d\n'
+	'find . -type f -size +1M\n'
+	'find . -type f -mtime -7'
+)
+
+if not os.path.exists(find_cheatpath):
+	with open(find_cheatpath, "w") as f:
+		f.write(find_cheatcontent)
+		
+grep_cheatpath = os.path.join(grep_dir, "cheatsheet.md")
+grep_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'grep -i "BOOGERS" boogers.md\n'
+	'grep -v "boogers" boogers.md\n'
+	'grep -n "shit" boogers.md\n'
+	'grep -c "boogers" boogers.md\n'
+	'grep -E "boogers|sherlock" boogers.md'
+)
+
+grep_booger_path = os.path.join(grep_dir, "boogers.md")
+grep_booger_content = (
+	'BOOGERS boogers boogers2\n'
+	'no shit sherlock'
+)
+
+if not os.path.exists(grep_cheatpath):
+	with open(grep_cheatpath, "w") as f:
+		f.write(grep_cheatcontent)
+		
+if not os.path.exists(grep_booger_path):
+	with open(grep_booger_path, "w") as f:
+		f.write(grep_booger_content)
+		
+sed_cheatpath = os.path.join(sed_dir, "cheatsheet.md")
+sed_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'sed -n "1p" boogers.md\n'
+	'sed -n "1,2p" boogers.md\n'
+	'sed "s/boogers/shit/" boogers.md\n'
+	'sed "/sherlock/d" boogers.md'
+)
+
+sed_boogers_path = os.path.join(sed_dir, "boogers.md")
+sed_boogers_content = (
+    'BOOGERS boogers boogers2\n'
+    'no shit sherlock\n'
+)
+
+if not os.path.exists(sed_boogers_path):
+    with open(sed_boogers_path, "w") as f:
+        f.write(sed_boogers_content)
+
+if not os.path.exists(sed_cheatpath):
+	with open(sed_cheatpath, "w") as f:
+		f.write(sed_cheatcontent)
+		
+sort_cheatpath = os.path.join(sort_dir, "cheatsheet.md")
+sort_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    'sort boogers.md\n'
+    'sort -r boogers.md\n'
+    'sort -k2 -n boogers.md\n'
+    'sort -k2 -nr boogers.md\n'
+)
+
+sort_boogers_path = os.path.join(sort_dir, "boogers.md")
+sort_boogers_content = (
+    'banana 20\n'
+    'apple 100\n'
+    'cherry 5\n'
+)
+
+if not os.path.exists(sort_cheatpath):
+	with open(sort_cheatpath, "w") as f:
+		f.write(sort_cheatcontent)
+		
+if not os.path.exists(sort_boogers_path):
+	with open(sort_boogers_path, "w") as f:
+		f.write(sort_boogers_content)
+		
+tr_cheatpath = os.path.join(tr_dir, "cheatsheet.md")
+tr_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'echo "boogers are cool" | tr "a-z" "A-Z"\n'
+	'echo "boogers123" | tr -d "0-9"'
+)
+
+if not os.path.exists(tr_cheatpath):
+		with open(tr_cheatpath, "w") as f:
+			f.write(tr_cheatcontent)
+			
+uniq_cheatpath = os.path.join(uniq_dir, "cheatsheet.md")
+uniq_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'uniq boogers.md\n'
+	'uniq -c boogers.md\n'
+	'uniq -d boogers.md\n'
+	'uniq -u boogers.md'
+)
+
+uniq_boogers_path = os.path.join(uniq_dir, "boogers.md")
+uniq_boogers_content = (
+    'apple\n'
+    'apple\n'
+    'apple\n'
+    'banana\n'
+    'banana\n'
+    'cherry\n'
+)
+
+if not os.path.exists(uniq_cheatpath):
+	with open(uniq_cheatpath, "w") as f:
+		f.write(uniq_cheatcontent)
+		
+if not os.path.exists(uniq_boogers_path):
+	with open(uniq_boogers_path, "w") as f:
+		f.write(uniq_boogers_content)
+		
+wc_cheatpath = os.path.join(wc_dir, "cheatsheet.md")
+wc_cheatcontent = (
+	'#!/usr/bin/env bash\n\n'
+	'wc boogers.md\n'
+	'wc -l boogers.md\n'
+	'wc -w boogers.md\n'
+	'wc -c boogers.md'
+)
+
+wc_boogers_path = os.path.join(wc_dir, "boogers.md")
+wc_boogers_content = (
+    'boogers boogers2 boogers3\n'
+    'no shit sherlock\n'
+)
+
+if not os.path.exists(wc_cheatpath):
+    with open(wc_cheatpath, "w") as f:
+        f.write(wc_cheatcontent)
+
+if not os.path.exists(wc_boogers_path):
+    with open(wc_boogers_path, "w") as f:
+        f.write(wc_boogers_content)
 
 print(f"Created daily folder structure for {today.strftime('%Y-%m%d')}")
 
