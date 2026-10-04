@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+line () {
+	printf '%*s' 50 '' | tr ' ' '-'
+	echo
+}
+
+blue () {
+	gum style --foreground 39 "$@"
+}
+
+bubble () {
+	gum style --border rounded
+}
+
+figlet "SYSTEMD"
+line
+{
+	SERVICE=cups
+	{
+		blue "$SERVICE Status"
+		systemctl status "$SERVICE" -n 10 --no-pager 2> /dev/null
+	} | bubble
+	line
+	{
+		blue "Restarting"
+		sudo systemctl restart "$SERVICE" 2> /dev/null
+	} | bubble
+	line
+	{
+		blue "Enable at Boot"
+		sudo systemctl enable "$SERVICE" 2> /dev/null
+	} | bubble
+	line
+	{
+		blue "Last 10 Log Lines"
+		line
+		journalctl -u "$SERVICE" -n 10 --no-pager 2> /dev/null
+	} | bubble
+	line
+	{
+		blue "Disable"
+		sudo systemctl disable "$SERVICE" 2> /dev/null
+	} | bubble
+	line
+	{
+		blue "Stop"
+		sudo systemctl stop "$SERVICE" 2> /dev/null
+	} | bubble
+	line
+	{
+		blue "Final Status"
+		line
+		systemctl status "$SERVICE" -n 10 --no-pager 2> /dev/null
+	} | bubble
+} | bubble
