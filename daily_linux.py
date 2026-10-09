@@ -34,8 +34,13 @@ sort_dir = os.path.join(day_dir, "sort")
 tr_dir = os.path.join(day_dir, "tr")
 uniq_dir = os.path.join(day_dir, "uniq")
 wc_dir = os.path.join(day_dir, "wc")
+tar_dir = os.path.join(day_dir, "tar")
+xargs_dir = os.path.join(day_dir, "xargs")
+rsync_dir = os.path.join(day_dir, "rsync")
+cron_dir = os.path.join(day_dir, "cron")
+hash_dir = os.path.join(day_dir, "hash")
 
-for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, cut_dir, file_dir, find_dir, grep_dir, sed_dir, sort_dir, tr_dir, uniq_dir, wc_dir]:
+for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, cut_dir, cron_dir, file_dir, find_dir, grep_dir, hash_dir, sed_dir, sort_dir, tar_dir, tr_dir, uniq_dir, wc_dir, rsync_dir, xargs_dir]:
     os.makedirs(path, exist_ok=True)
 
 # ==== Cheat Sheets ==== #
@@ -661,9 +666,92 @@ if not os.path.exists(wc_cheatpath):
 if not os.path.exists(wc_boogers_path):
     with open(wc_boogers_path, "w") as f:
         f.write(wc_boogers_content)
+        
+xargs_cheatpath = os.path.join(xargs_dir, "cheatsheet.md")
+xargs_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    'echo "file1 file2 file3" | xargs touch\n'
+)
+
+if not os.path.exists(xargs_cheatpath):
+    with open(xargs_cheatpath, "w") as f:
+        f.write(xargs_cheatcontent)
+
+rsync_cheatpath = os.path.join(rsync_dir, "cheatsheet.md")
+rsync_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    '# Sync contents of dir1 into dir2\n'
+    'rsync -av dir1/ dir2/\n'
+)
+
+rsync_dir1 = os.path.join(rsync_dir, "dir1")
+rsync_dir2 = os.path.join(rsync_dir, "dir2")
+
+os.makedirs(rsync_dir1, exist_ok=True)
+os.makedirs(rsync_dir2, exist_ok=True)
+
+rsync_testfile = os.path.join(rsync_dir1, "boogers.md")
+
+if not os.path.exists(rsync_testfile):
+    with open(rsync_testfile, "w") as f:
+        f.write("boogers\n")
+
+if not os.path.exists(rsync_cheatpath):
+    with open(rsync_cheatpath, "w") as f:
+        f.write(rsync_cheatcontent)
+
+tar_cheatpath = os.path.join(tar_dir, "cheatsheet.md")
+tar_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    '# Create archive\n'
+    'tar -czf backup.tar.gz testdir/\n\n'
+    '# Inspect archive without extracting\n'
+    'tar -tzf backup.tar.gz\n\n'
+    '# Extract archive\n'
+    'tar -xzf backup.tar.gz\n'
+)
+
+if not os.path.exists(tar_cheatpath):
+    with open(tar_cheatpath, "w") as f:
+        f.write(tar_cheatcontent)
+        
+cron_cheatpath = os.path.join(cron_dir, "cheatsheet.md")
+cron_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    '# View your cron jobs\n'
+    'crontab -l\n\n'
+    '# Edit your cron jobs\n'
+    'crontab -e\n\n'
+    '# Add boogers.sh to run every day at 3:30 AM\n'
+    '30 3 * * * /home/cosmos/boogers.sh\n\n'
+    '# Edit cron again and remove boogers.sh\n'
+    'crontab -e\n'
+)
+
+if not os.path.exists(cron_cheatpath):
+    with open(cron_cheatpath, "w") as f:
+        f.write(cron_cheatcontent)
+
+hash_cheatpath = os.path.join(hash_dir, "cheatsheet.md")
+hash_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    '# Generate SHA-256 hash\n'
+    'sha256sum boogers.md\n'
+)
+
+hash_boogers_path = os.path.join(hash_dir, "boogers.md")
+hash_boogers_content = (
+    'boogers\n'
+)
+
+if not os.path.exists(hash_cheatpath):
+    with open(hash_cheatpath, "w") as f:
+        f.write(hash_cheatcontent)
+
+if not os.path.exists(hash_boogers_path):
+    with open(hash_boogers_path, "w") as f:
+        f.write(hash_boogers_content)
 
 print(f"Created daily folder structure for {today.strftime('%Y-%m%d')}")
-
-# Don't Forget to chmod +x the ./system<number> script!
 
 signal_link("daily_linux.py", "dailybox-prod-LXC")
