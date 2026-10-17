@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+line () {
+	printf '%*s' 50 '' | tr ' ' '-'
+	echo
+}
+
+bubble () {
+	gum style --border rounded
+}
+
+blue () {
+	gum style --foreground 39 "$@"
+}
+
+figlet "Permissions"
+line
+{
+	{
+		rm -f -v file1 file2 2>/dev/null
+		touch file1 file2
+	} | bubble
+	line
+	{
+		blue "Before"
+		line
+		{
+			ls -l
+		} | bubble
+	} | bubble
+	line
+	chmod 600 file1 2>/dev/null
+	chmod 754 file2 2>/dev/null
+	chown root:root file1 2>/dev/null
+	sudo chown "$USER":"$USER" file2 2>/dev/null
+	{
+		blue "After"
+		line
+		{
+			ls -l
+		} | bubble
+	} | bubble
+	line
+	{
+		{
+			blue "File1 should be rw-------"
+		} | bubble
+		line
+		{
+			blue "File2 should be rwxr-xr--"
+		} | bubble
+	} | bubble
+} | bubble
