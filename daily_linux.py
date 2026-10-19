@@ -25,9 +25,11 @@ systemd_dir = os.path.join(day_dir, "systemd")
 process_dir = os.path.join(day_dir, "process")
 network_dir = os.path.join(day_dir, "networking")
 awk_dir = os.path.join(day_dir, "awk")
+bash_dir = os.path.join(day_dir, "bash")
 cut_dir = os.path.join(day_dir, "cut")
 file_dir = os.path.join(day_dir, "file")
 find_dir = os.path.join(day_dir, "find")
+diff_dir = os.path.join(day_dir, "diff")
 grep_dir = os.path.join(day_dir, "grep")
 sed_dir = os.path.join(day_dir, "sed")
 sort_dir = os.path.join(day_dir, "sort")
@@ -37,10 +39,13 @@ wc_dir = os.path.join(day_dir, "wc")
 tar_dir = os.path.join(day_dir, "tar")
 xargs_dir = os.path.join(day_dir, "xargs")
 rsync_dir = os.path.join(day_dir, "rsync")
+read_dir = os.path.join(day_dir, "read")
 cron_dir = os.path.join(day_dir, "cron")
 hash_dir = os.path.join(day_dir, "hash")
+gpg_dir = os.path.join(day_dir, "gpg")
+sqlite_dir = os.path.join(day_dir, "sqlite")
 
-for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, cut_dir, cron_dir, file_dir, find_dir, grep_dir, hash_dir, sed_dir, sort_dir, tar_dir, tr_dir, uniq_dir, wc_dir, rsync_dir, xargs_dir]:
+for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, bash_dir, cut_dir, cron_dir, file_dir, find_dir, gpg_dir, diff_dir, grep_dir, hash_dir, sed_dir, sort_dir, sqlite_dir, tar_dir, tr_dir, uniq_dir, wc_dir, rsync_dir, read_dir, xargs_dir]:
     os.makedirs(path, exist_ok=True)
 
 # ==== Cheat Sheets ==== #
@@ -57,25 +62,76 @@ system_cheatcontent = (
     'bubble () {\n'
     '\tgum style --border rounded\n'
     '}\n\n'
-    'figlet System\n'
-    'line\n'
-    '{\n'
-    '\tblue "Linux Warmup" | bubble\n'
-    '\tline\n'
+    'system_info () {\n'
     '\techo "User: $(whoami)"\n'
-    '\techo "Hostname: $(hostname)"\n'
+    '\tline\n'
     '\techo "Uptime: $(uptime -p)"\n'
+    '\tline\n'
+    '\techo "Hostname: $(hostname)"\n'
+    '\tline\n'
     '\techo "Today is: $(date)"\n'
-    '\tline\n'
-    '\tblue "Disk Usage:" | bubble\n'
+    '}\n\n'
+    'disk_usage () {\n'
     '\tdf -h /\n'
-    '\tline\n'
-    '\tblue "IP Address:" | bubble\n'
+    '}\n\n'
+    'ip_address () {\n'
     '\tip -brief addr\n'
-    '\tline\n'
-    '\tblue "SSH Service:" | bubble\n'
-    '\tsystemctl is-active ssh || sytemctl status ssh | head -n 10\n'
-    '} | bubble\n'
+    '}\n\n'
+    'ssh_service () {\n'
+    '\tsystemctl is-active ssh || systemctl status ssh | head -n 10\n'
+    '}\n\n'
+    'while true; do\n\n'
+    '\tfiglet "System"\n'
+    '\tline\n\n'
+    '\tblue "Choose what you want to inspect:"\n'
+    '\techo "1) System Info"\n'
+    '\techo "2) Disk Usage"\n'
+    '\techo "3) IP Address"\n'
+    '\techo "4) SSH Service"\n'
+    '\techo "5) Run Everything"\n'
+    '\techo "q) Quit"\n\n'
+    '\tread -rp "> "\n\n'
+    '\tcase "$REPLY" in\n\n'
+    '\t\t1)\n'
+    '\t\t\tblue "Linux Warmup"\n'
+    '\t\t\tsystem_info | bubble\n'
+    '\t\t\t;;\n\n'
+    '\t\t2)\n'
+    '\t\t\tblue "Disk Usage"\n'
+    '\t\t\tdisk_usage | bubble\n'
+    '\t\t\t;;\n\n'
+    '\t\t3)\n'
+    '\t\t\tblue "IP Address"\n'
+    '\t\t\tip_address | bubble\n'
+    '\t\t\t;;\n\n'
+    '\t\t4)\n'
+    '\t\t\tblue "SSH Service"\n'
+    '\t\t\tssh_service | bubble\n'
+    '\t\t\t;;\n\n'
+    '\t\t5)\n'
+    '\t\t\tblue "Linux Warmup"\n'
+    '\t\t\tsystem_info | bubble\n'
+    '\t\t\tline\n\n'
+    '\t\t\tblue "Disk Usage"\n'
+    '\t\t\tdisk_usage | bubble\n'
+    '\t\t\tline\n\n'
+    '\t\t\tblue "IP Address"\n'
+    '\t\t\tip_address | bubble\n'
+    '\t\t\tline\n\n'
+    '\t\t\tblue "SSH Service"\n'
+    '\t\t\tssh_service | bubble\n'
+    '\t\t\t;;\n\n'
+    '\t\tq|Q)\n'
+    '\t\t\techo "Later nerd 🤓"\n'
+    '\t\t\tbreak\n'
+    '\t\t\t;;\n\n'
+    '\t\t*)\n'
+    '\t\t\techo "Invalid option."\n'
+    '\t\t\t;;\n\n'
+    '\tesac\n\n'
+    '\techo\n'
+    '\tread -rp "Press Enter to continue..."\n\n'
+    'done\n'
 )
 
 if not os.path.exists(system_cheatpath):
@@ -750,7 +806,147 @@ if not os.path.exists(hash_cheatpath):
 
 if not os.path.exists(hash_boogers_path):
     with open(hash_boogers_path, "w") as f:
-        f.write(hash_boogers_content)
+        f.write(hash_boogers_content)        
+
+diff_cheatpath = os.path.join(diff_dir, "cheatsheet.md")
+diff_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    'diff -u file1.txt file2.txt\n'
+)
+
+diff_file1_path = os.path.join(diff_dir, "file1.txt")
+diff_file1_content = (
+    'hello\n'
+)
+
+diff_file2_path = os.path.join(diff_dir, "file2.txt")
+diff_file2_content = (
+    'hello world\n'
+)
+
+if not os.path.exists(diff_cheatpath):
+    with open(diff_cheatpath, "w") as f:
+        f.write(diff_cheatcontent)
+
+if not os.path.exists(diff_file1_path):
+    with open(diff_file1_path, "w") as f:
+        f.write(diff_file1_content)
+
+if not os.path.exists(diff_file2_path):
+    with open(diff_file2_path, "w") as f:
+        f.write(diff_file2_content)
+
+read_cheatpath = os.path.join(read_dir, "cheatsheet.md")
+read_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    'read -rp "What package do you want to install? " package\n\n'
+    'echo "You chose: $package"\n'
+)
+
+if not os.path.exists(read_cheatpath):
+    with open(read_cheatpath, "w") as f:
+        f.write(read_cheatcontent)
+
+gpg_cheatpath = os.path.join(gpg_dir, "cheatsheet.md")
+gpg_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    '# Encrypt file\n'
+    'gpg -c secret.txt\n\n'
+    '# Decrypt file\n'
+    'gpg -o decrypted.txt -d secret.txt.gpg\n'
+)
+
+gpg_secret_path = os.path.join(gpg_dir, "secret.txt")
+gpg_secret_content = (
+    'boogers are classified\n'
+)
+
+if not os.path.exists(gpg_cheatpath):
+    with open(gpg_cheatpath, "w") as f:
+        f.write(gpg_cheatcontent)
+
+if not os.path.exists(gpg_secret_path):
+    with open(gpg_secret_path, "w") as f:
+        f.write(gpg_secret_content)
+
+sqlite_cheatpath = os.path.join(sqlite_dir, "cheatsheet.md")
+sqlite_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    '# Open/Create Database\n'
+    'sqlite3 practice.db\n\n'
+    '# Create Table\n'
+    'CREATE TABLE notes (\n'
+    '    id INTEGER PRIMARY KEY,\n'
+    '    note TEXT\n'
+    ');\n\n'
+    '# Insert\n'
+    'INSERT INTO notes (note)\n'
+    'VALUES ("boogers");\n\n'
+    '# Read\n'
+    'SELECT * FROM notes;\n\n'
+    '# Update\n'
+    'UPDATE notes\n'
+    'SET note = "classified boogers"\n'
+    'WHERE id = 1;\n\n'
+    '# Delete\n'
+    'DELETE FROM notes\n'
+    'WHERE id = 1;\n\n'
+    '.quit\n'
+)
+
+if not os.path.exists(sqlite_cheatpath):
+    with open(sqlite_cheatpath, "w") as f:
+        f.write(sqlite_cheatcontent)
+        
+bash_cheatpath = os.path.join(
+    bash_dir,
+    "cheatsheet.md"
+)
+
+bash_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+
+    '# FOR\n'
+    'for name in cosmos friday waffles; do\n'
+    '    echo "$name"\n'
+    'done\n\n'
+
+    '# C-STYLE FOR\n'
+    'for ((i=1; i<=3; i++)); do\n'
+    '    echo "$i"\n'
+    'done\n\n'
+
+    '# WHILE\n'
+    'count=1\n\n'
+    'while [[ $count -le 3 ]]; do\n'
+    '    echo "$count"\n'
+    '    ((count++))\n'
+    'done\n\n'
+
+    '# WHILE READ\n'
+    'while read -r line; do\n'
+    '    echo "$line"\n'
+    'done < names.txt\n'
+)
+
+bash_path = os.path.join(
+    bash_dir,
+    "names.txt"
+)
+
+bash_content = (
+    'cosmos\n'
+    'friday\n'
+    'waffles\n'
+)
+
+if not os.path.exists(bash_cheatpath):
+    with open(bash_cheatpath, "w") as f:
+        f.write(bash_cheatcontent)
+
+if not os.path.exists(bash_path):
+    with open(bash_path, "w") as f:
+        f.write(bash_content)
 
 print(f"Created daily folder structure for {today.strftime('%Y-%m%d')}")
 
