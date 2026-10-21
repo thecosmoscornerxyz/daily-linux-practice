@@ -26,11 +26,13 @@ process_dir = os.path.join(day_dir, "process")
 network_dir = os.path.join(day_dir, "networking")
 awk_dir = os.path.join(day_dir, "awk")
 bash_dir = os.path.join(day_dir, "bash")
+curl_dir = os.path.join(day_dir, "curl")
 cut_dir = os.path.join(day_dir, "cut")
 file_dir = os.path.join(day_dir, "file")
 find_dir = os.path.join(day_dir, "find")
 diff_dir = os.path.join(day_dir, "diff")
 grep_dir = os.path.join(day_dir, "grep")
+jq_dir = os.path.join(day_dir, "jq")
 sed_dir = os.path.join(day_dir, "sed")
 sort_dir = os.path.join(day_dir, "sort")
 tr_dir = os.path.join(day_dir, "tr")
@@ -45,7 +47,7 @@ hash_dir = os.path.join(day_dir, "hash")
 gpg_dir = os.path.join(day_dir, "gpg")
 sqlite_dir = os.path.join(day_dir, "sqlite")
 
-for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, bash_dir, cut_dir, cron_dir, file_dir, find_dir, gpg_dir, diff_dir, grep_dir, hash_dir, sed_dir, sort_dir, sqlite_dir, tar_dir, tr_dir, uniq_dir, wc_dir, rsync_dir, read_dir, xargs_dir]:
+for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, bash_dir, curl_dir, cut_dir, cron_dir, file_dir, find_dir, gpg_dir, diff_dir, grep_dir, jq_dir, hash_dir, sed_dir, sort_dir, sqlite_dir, tar_dir, tr_dir, uniq_dir, wc_dir, rsync_dir, read_dir, xargs_dir]:
     os.makedirs(path, exist_ok=True)
 
 # ==== Cheat Sheets ==== #
@@ -906,27 +908,29 @@ bash_cheatpath = os.path.join(
 bash_cheatcontent = (
     '#!/usr/bin/env bash\n\n'
 
-    '# FOR\n'
-    'for name in cosmos friday waffles; do\n'
-    '    echo "$name"\n'
+    '# For Loop\n'
+    'for item in apple banana cherry; do\n'
+    '    echo "$item"\n'
     'done\n\n'
 
-    '# C-STYLE FOR\n'
-    'for ((i=1; i<=3; i++)); do\n'
+    '# C-Style For Loop\n'
+    'for ((i=1; i<=5; i++)); do\n'
     '    echo "$i"\n'
     'done\n\n'
 
-    '# WHILE\n'
-    'count=1\n\n'
-    'while [[ $count -le 3 ]]; do\n'
+    '# While Loop\n'
+    'count=1\n'
+    'while [[ $count -le 5 ]]; do\n'
     '    echo "$count"\n'
     '    ((count++))\n'
     'done\n\n'
 
-    '# WHILE READ\n'
-    'while read -r line; do\n'
-    '    echo "$line"\n'
-    'done < names.txt\n'
+    '# Until Loop\n'
+    'count=1\n'
+    'until [[ $count -gt 5 ]]; do\n'
+    '    echo "$count"\n'
+    '    ((count++))\n'
+    'done\n'
 )
 
 bash_path = os.path.join(
@@ -947,6 +951,68 @@ if not os.path.exists(bash_cheatpath):
 if not os.path.exists(bash_path):
     with open(bash_path, "w") as f:
         f.write(bash_content)
+
+curl_cheatpath = os.path.join(curl_dir, "cheatsheet.md")
+
+curl_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    '# Basic GET Request\n'
+    'curl https://httpbin.org/get\n\n'
+    '# Show Response Headers\n'
+    'curl -I https://example.com\n\n'
+    '# Follow Redirects\n'
+    'curl -L https://example.com\n\n'
+    '# Save Response to File\n'
+    'curl -o response.json https://httpbin.org/get\n\n'
+    '# Silent Request\n'
+    'curl -s https://httpbin.org/get\n'
+)
+
+if not os.path.exists(curl_cheatpath):
+    with open(curl_cheatpath, "w") as f:
+        f.write(curl_cheatcontent)
+
+jq_cheatpath = os.path.join(jq_dir, "cheatsheet.md")
+jq_jsonpath = os.path.join(jq_dir, "servers.json")
+
+jq_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    '# Pretty Print JSON\n'
+    'jq "." servers.json\n\n'
+    '# Read One Field\n'
+    'jq ".hostname" servers.json\n\n'
+    '# Read Nested Field\n'
+    'jq ".system.os" servers.json\n\n'
+    '# Read Array\n'
+    'jq ".services[]" servers.json\n\n'
+    '# Read Array Element\n'
+    'jq ".services[0]" servers.json\n\n'
+    '# Raw Output (Remove JSON Quotes)\n'
+    'jq -r ".hostname" servers.json\n'
+)
+
+jq_jsoncontent = (
+    '{\n'
+    '  "hostname": "syrup",\n'
+    '  "system": {\n'
+    '    "os": "Debian",\n'
+    '    "status": "online"\n'
+    '  },\n'
+    '  "services": [\n'
+    '    "jellyfin",\n'
+    '    "immich",\n'
+    '    "traefik"\n'
+    '  ]\n'
+    '}\n'
+)
+
+if not os.path.exists(jq_cheatpath):
+    with open(jq_cheatpath, "w") as f:
+        f.write(jq_cheatcontent)
+
+if not os.path.exists(jq_jsonpath):
+    with open(jq_jsonpath, "w") as f:
+        f.write(jq_jsoncontent)
 
 print(f"Created daily folder structure for {today.strftime('%Y-%m%d')}")
 
