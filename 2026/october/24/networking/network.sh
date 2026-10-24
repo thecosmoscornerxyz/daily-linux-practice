@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+line () {
+	printf '%*s' 50 '' | tr ' ' '-'
+	echo
+}
+
+blue () {
+	gum style --foreground 39 "$@"
+}
+
+bubble () {
+	gum style --border rounded
+}
+
+figlet "Network"
+line
+{
+	{
+		blue "IP Address:"
+		line
+		{
+			ip -brief addr
+		} | bubble
+	} | bubble
+	line
+	{
+		blue "IP Route"
+		line
+		{
+			ip route
+		} | bubble
+	} | bubble
+	line
+	{
+		blue "DNS"
+		line
+		{
+			dig + short google.com || nslookup google.com
+		} | bubble
+	} | bubble
+	line
+	{
+		blue "Open Ports"
+		line
+		{
+			ss -tulnp | head -n 10
+		} | bubble
+	} | bubble
+	line
+	{
+		blue "TCPDUMP"
+		line
+		{
+			sudo timeout 10 tcpdump -n -i any | head -n 30
+		} | bubble
+	} | bubble
+	line
+	{
+		blue "Nmap"
+		line
+		{
+			sudo nmap -Pn 127.0.0.1
+		} | bubble
+	} | bubble
+	line
+	{
+		blue "ARP"
+		line
+		{
+			ip neigh
+		} | bubble
+	} | bubble
+} | bubble
