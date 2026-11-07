@@ -1,0 +1,12 @@
+{
+  "hostname": "syrup",
+  "system": {
+    "os": "Debian",
+    "status": "online"
+  },
+  "services": [
+    "jellyfin",
+    "immich",
+    "traefik"
+  ]
+}

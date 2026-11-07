@@ -33,6 +33,10 @@ find_dir = os.path.join(day_dir, "find")
 diff_dir = os.path.join(day_dir, "diff")
 grep_dir = os.path.join(day_dir, "grep")
 jq_dir = os.path.join(day_dir, "jq")
+mcp_dir = os.path.join(day_dir, "mcp")
+ollama_dir = os.path.join(day_dir, "ollama")
+passing_dir = os.path.join(day_dir, "passing")
+prompt_dir = os.path.join(day_dir, "prompt")
 sed_dir = os.path.join(day_dir, "sed")
 sort_dir = os.path.join(day_dir, "sort")
 tr_dir = os.path.join(day_dir, "tr")
@@ -47,7 +51,7 @@ hash_dir = os.path.join(day_dir, "hash")
 gpg_dir = os.path.join(day_dir, "gpg")
 sqlite_dir = os.path.join(day_dir, "sqlite")
 
-for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, bash_dir, curl_dir, cut_dir, cron_dir, file_dir, find_dir, gpg_dir, diff_dir, grep_dir, jq_dir, hash_dir, sed_dir, sort_dir, sqlite_dir, tar_dir, tr_dir, uniq_dir, wc_dir, rsync_dir, read_dir, xargs_dir]:
+for path in [day_dir, system_dir, permissions_dir, usergroup_dir, systemd_dir, process_dir, network_dir, awk_dir, bash_dir, curl_dir, cut_dir, cron_dir, file_dir, find_dir, gpg_dir, diff_dir, grep_dir, jq_dir, mcp_dir, ollama_dir, passing_dir, prompt_dir, hash_dir, sed_dir, sort_dir, sqlite_dir, tar_dir, tr_dir, uniq_dir, wc_dir, rsync_dir, read_dir, xargs_dir]:
     os.makedirs(path, exist_ok=True)
 
 # ==== Cheat Sheets ==== #
@@ -1013,6 +1017,151 @@ if not os.path.exists(jq_cheatpath):
 if not os.path.exists(jq_jsonpath):
     with open(jq_jsonpath, "w") as f:
         f.write(jq_jsoncontent)
+        
+
+ollama_cheatpath = os.path.join(ollama_dir, "cheatsheet.md")
+ollama_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    'HOST="http://localhost:11434"\n'
+    'MODEL="llama3.2"\n'
+    "messages='[]'\n\n"
+    'while true; do\n'
+    '    read -rp "You: " input || break\n\n'
+    '    [[ "$input" == "exit" ]] && break\n'
+    '    [[ -z "$input" ]] && continue\n\n'
+    '    messages=$(jq -c --arg msg "$input" \\\n'
+    '        \'. + [{"role":"user","content":$msg}]\' <<< "$messages")\n\n'
+    '    payload=$(jq -n \\\n'
+    '        --arg model "$MODEL" \\\n'
+    '        --argjson messages "$messages" \\\n'
+    '        \'{model:$model, messages:$messages, stream:false}\')\n\n'
+    '    response=$(curl -fsS "$HOST/api/chat" \\\n'
+    '        -H "Content-Type: application/json" \\\n'
+    '        -d "$payload") || break\n\n'
+    '    reply=$(jq -er \'.message.content\' <<< "$response") || break\n\n'
+    '    echo "Friday: $reply"\n\n'
+    '    messages=$(jq -c --arg msg "$reply" \\\n'
+    '        \'. + [{"role":"assistant","content":$msg}]\' <<< "$messages")\n'
+    'done\n'
+)
+
+if not os.path.exists(ollama_cheatpath):
+    with open(ollama_cheatpath, "w") as f:
+        f.write(ollama_cheatcontent)
+        
+
+mcp_cheatpath = os.path.join(mcp_dir, "cheatsheet.md")
+mcp_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+    'while IFS= read -r request; do\n\n'
+    '    method=$(jq -r \'.method // empty\' <<< "$request")\n'
+    '    id=$(jq -c \'.id // null\' <<< "$request")\n\n'
+    '    case "$method" in\n\n'
+    '        initialize)\n'
+    '            jq -nc --argjson id "$id" \'{\n'
+    '                jsonrpc:"2.0",\n'
+    '                id:$id,\n'
+    '                result:{\n'
+    '                    protocolVersion:"2025-06-18",\n'
+    '                    capabilities:{tools:{}},\n'
+    '                    serverInfo:{name:"daily-mcp",version:"1.0"}\n'
+    '                }\n'
+    '            }\'\n'
+    '            ;;\n\n'
+    '        tools/list)\n'
+    '            jq -nc --argjson id "$id" \'{\n'
+    '                jsonrpc:"2.0",\n'
+    '                id:$id,\n'
+    '                result:{\n'
+    '                    tools:[{\n'
+    '                        name:"get_hostname",\n'
+    '                        description:"Get the Linux hostname",\n'
+    '                        inputSchema:{type:"object",properties:{}}\n'
+    '                    }]\n'
+    '                }\n'
+    '            }\'\n'
+    '            ;;\n\n'
+    '        tools/call)\n'
+    '            name=$(jq -r \'.params.name // empty\' <<< "$request")\n\n'
+    '            if [[ "$name" == "get_hostname" ]]; then\n'
+    '                hostname=$(hostname)\n\n'
+    '                jq -nc --argjson id "$id" --arg host "$hostname" \'{\n'
+    '                    jsonrpc:"2.0",\n'
+    '                    id:$id,\n'
+    '                    result:{\n'
+    '                        content:[{type:"text",text:$host}]\n'
+    '                    }\n'
+    '                }\'\n'
+    '            fi\n'
+    '            ;;\n\n'
+    '    esac\n'
+    'done\n'
+)
+
+if not os.path.exists(mcp_cheatpath):
+    with open(mcp_cheatpath, "w") as f:
+        f.write(mcp_cheatcontent)
+        
+
+prompt_dir = os.path.join(day_dir, "prompt")
+
+prompt_cheatpath = os.path.join(prompt_dir, "cheatsheet.md")
+prompt_cheatcontent = (
+    '# Daily Agent Prompt Engineering\n\n'
+    '## 1. ROLE\n'
+    'Who is the agent? What is its responsibility?\n\n'
+    '## 2. GOAL\n'
+    'What must it accomplish? What defines success?\n\n'
+    '## 3. CONTEXT\n'
+    'What environment and facts does it need?\n\n'
+    '## 4. CONSTRAINTS\n'
+    'What can and cannot the agent do?\n\n'
+    '## 5. RESOURCES\n'
+    'What tools, APIs, or databases can it use?\n'
+    'When should each resource be used?\n\n'
+    '## 6. OUTPUT\n'
+    'What response format is required?\n\n'
+    '## 7. FEEDBACK\n'
+    'What happens if information is missing?\n'
+    'What happens when a tool fails?\n'
+)
+
+if not os.path.exists(prompt_cheatpath):
+    with open(prompt_cheatpath, "w") as f:
+        f.write(prompt_cheatcontent)
+
+passing_dir = os.path.join(day_dir, "passing")
+passing_cheatpath = os.path.join(passing_dir, "cheatsheet.md")
+passing_cheatcontent = (
+    '#!/usr/bin/env bash\n\n'
+
+    '# Create booger1.sh (Sender)\n'
+    'cat > booger1.sh <<\'EOF\'\n'
+    '#!/usr/bin/env bash\n\n'
+    'DATA=$(jq -n \\\n'
+    '    --arg name "Friday" \\\n'
+    '    --arg status "online" \\\n'
+    '    \'{name:$name,status:$status}\')\n\n'
+    'echo "$DATA" | ./booger2.sh\n'
+    'EOF\n\n'
+
+    '# Create booger2.sh (Receiver)\n'
+    'cat > booger2.sh <<\'EOF\'\n'
+    '#!/usr/bin/env bash\n\n'
+    'DATA=$(cat)\n\n'
+    'NAME=$(jq -r \'.name\' <<< "$DATA")\n'
+    'STATUS=$(jq -r \'.status\' <<< "$DATA")\n\n'
+    'echo "$NAME is $STATUS"\n'
+    'EOF\n\n'
+
+    '# Execute\n'
+    'chmod +x booger1.sh booger2.sh\n'
+    './booger1.sh\n'
+)
+
+if not os.path.exists(passing_cheatpath):
+    with open(passing_cheatpath, "w") as f:
+        f.write(passing_cheatcontent)
 
 print(f"Created daily folder structure for {today.strftime('%Y-%m%d')}")
 
